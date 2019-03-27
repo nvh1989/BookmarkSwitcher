@@ -1,6 +1,6 @@
 {
   "name": "Bookmark bar switcher",
-  "version": "1.1",
+  "version": "0.2",
   "description": "Switches the bookmarks in the bookmark bar with the bookmarks in a specific subfolder",
   "permissions": ["bookmarks", "activeTab", "declarativeContent", "storage"],
   "options_page": "options.html",

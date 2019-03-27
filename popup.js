@@ -1,6 +1,7 @@
 'use strict';
 
 var tmpFldrId = -1;
+var numFoldersSwitched = 0;
 
 function swapBookmarks() {
 	createTmpFldr(function(){
@@ -78,11 +79,46 @@ function processBookmark(fromId, toId, callback) {
 	});
 }
 
+function swapBookmarksBetweenTwoFolders() {
+	swapBookmarksFromTo(1,2,function() {
+		closeWindowWhenDone();
+	});
+	swapBookmarksFromTo(2,1,function() {
+		closeWindowWhenDone();
+	});
+	// swapBookmarksFromTo(1,2);
+	// swapBookmarksFromTo(2,1);
+}
+
+function swapBookmarksFromTo(fromId, toId, callback) {
+	chrome.bookmarks.getSubTree(String(fromId), function (bmTree) {
+		if (bmTree[0].children && bmTree[0].children.length > 0) {
+			var i;
+			for (i = 0; i < bmTree[0].children.length; i++) {
+				chrome.bookmarks.move(bmTree[0].children[i].id,{'parentId':String(toId)});
+			}
+		}
+		chrome.extension.getBackgroundPage().console.log("Switched two bookmark folders contents");
+		callback();
+	});
+}
+
+function closeWindowWhenDone() {
+	chrome.extension.getBackgroundPage().console.log("Number of function calls:" + numFoldersSwitched);
+	numFoldersSwitched++;
+	if (numFoldersSwitched == 2) {
+		numFoldersSwitched = 0;
+		chrome.extension.getBackgroundPage().console.log("Ready to close the window");
+		window.close();
+	}
+}
+
 function processNode(node, moveToFolderId) {
 	//chrome.extension.getBackgroundPage().console.log("Processing node " + node.id + " from node " + node.parentId + " to node " + String(moveToFolderId));
 	chrome.bookmarks.move(node.id,{'parentId':String(moveToFolderId)});
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-	swapBookmarks();
+	//swapBookmarks();
+	swapBookmarksBetweenTwoFolders();
 });

@@ -11,6 +11,7 @@ function constructCombo() {
 	var combo = document.getElementById("combo");
   var option = document.createElement("option");
 
+  /*
   chrome.bookmarks.getSubTree('0', function (bmTree) {
 		bmTree.forEach( function (node) {
 			node.children.forEach(function(child){
@@ -25,7 +26,22 @@ function constructCombo() {
 			});
 		});
   });
+  */
+
   
+ var result = chrome.bookmarks.getSubTree('2', function (bmTree) {
+  var i;
+  for (i = 0; i < bmTree.length; i++) {
+		chrome.extension.getBackgroundPage().console.log("Index: " + i);
+    option.text = bmTree[i].title;
+    option.value = bmTree[i].title;
+    try {
+      combo.add(option, null); //Standard 
+    }catch(error) {
+      combo.add(option); // IE only
+    }
+  }
+});
 
   /*
   for (let item of kButtonColors) {
